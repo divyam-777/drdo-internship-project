@@ -8,16 +8,11 @@ from torch.utils.data import DataLoader
 import os
 from tqdm import tqdm
 
-# =============================
-# Device Setup
-# =============================
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("Using device:", device)
 
-# =============================
-# Paths
-# =============================
+
 
 train_path = "./imagenet-10"
 val_path = "./imagenet-10"
@@ -25,9 +20,7 @@ val_path = "./imagenet-10"
 checkpoint_dir = "./checkpoints"
 os.makedirs(checkpoint_dir, exist_ok=True)
 
-# =============================
-# Transforms
-# =============================
+
 
 transform_train = transforms.Compose([
     transforms.Resize((224,224)),
@@ -40,9 +33,9 @@ transform_test = transforms.Compose([
     transforms.ToTensor()
 ])
 
-# =============================
+
 # Dataset
-# =============================
+
 
 train_dataset = datasets.ImageFolder(train_path, transform=transform_train)
 test_dataset = datasets.ImageFolder(val_path, transform=transform_test)
@@ -50,9 +43,8 @@ test_dataset = datasets.ImageFolder(val_path, transform=transform_test)
 train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
-# =============================
+
 # Models
-# =============================
 
 models_dict = {}
 
@@ -70,9 +62,7 @@ models_dict["resnet18"] = resnet.to(device)
 
 criterion = nn.CrossEntropyLoss()
 
-# =============================
-# Training Function
-# =============================
+
 
 def train_model(model, name, epochs=5):
 
@@ -127,9 +117,7 @@ def train_model(model, name, epochs=5):
             "optimizer_state": optimizer.state_dict()
         }, path)
 
-# =============================
-# Test Function
-# =============================
+
 
 def test_model(model):
 
@@ -154,9 +142,8 @@ def test_model(model):
 
     return 100 * correct / total
 
-# =============================
+
 # SimBA Attack
-# =============================
 
 def simba_attack(model, images, labels, epsilon=0.2, iters=10):
 
@@ -198,9 +185,7 @@ def simba_attack(model, images, labels, epsilon=0.2, iters=10):
 
     return adv_images
 
-# =============================
-# Evaluate Under Attack
-# =============================
+
 
 def evaluate_under_attack(model):
 
@@ -225,9 +210,7 @@ def evaluate_under_attack(model):
 
     return 100 * correct / total
 
-# =============================
-# Run Training + Evaluation
-# =============================
+
 
 results = {}
 
@@ -246,9 +229,9 @@ for name, model in models_dict.items():
     print(f"{name} Clean Accuracy: {clean_acc:.2f}%")
     print(f"{name} Adversarial Accuracy: {adv_acc:.2f}%")
 
-# =============================
+
 # Final Results
-# =============================
+
 
 print("\nFinal Results")
 
